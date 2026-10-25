@@ -43,9 +43,10 @@ Use **Workers Paid ($5/month, one plan for all your sites)** for any site you wa
    | `NEXT_PUBLIC_SANITY_DATASET` | `production` | |
    | `CF_WORKER_NAME` | `cozy-desk` | same as the Worker name |
    | `CF_ROUTE` | `cozydesk.com` | optional; adds apex + `www` custom domains if the domain is on Cloudflare |
+   | `CF_CACHE` | `kv` | optional; `r2` (default) caches pages in R2 and needs R2 switched on for the account (payment method on file, free tier included). `kv` uses Workers KV instead: no billing step, but small free limits, so use it for test sites only |
 
 5. **Worker secret** (Settings → Variables and secrets → *Secret*): `SANITY_WEBHOOK_SECRET` = the string from step 1.4.
-6. Deploy. The first run creates the R2 bucket `cozy-desk-cache` automatically. If it reports that it could not, create a bucket with exactly that name in **R2** and redeploy.
+6. Deploy. The first run creates the cache store `cozy-desk-cache` automatically (an R2 bucket, or a KV namespace when `CF_CACHE=kv`). If it reports that it could not, create one with exactly that name in **R2** (or **Workers KV**) and redeploy. R2 must first be enabled for the account (R2 → Add R2 subscription; Cloudflare asks for a payment method).
 7. Open the `*.workers.dev` address: you should see the setup/empty site. Open `/studio`, sign in.
 
 > `NEXT_PUBLIC_*` values are written into the build. Changing one means redeploying.

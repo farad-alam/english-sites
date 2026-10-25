@@ -72,7 +72,7 @@ Useful commands:
 The full step-by-step list is in **[docs/NEW-SITE-CHECKLIST.md](docs/NEW-SITE-CHECKLIST.md)**. In short:
 
 1. **Sanity:** create a project (Free plan) → copy the Project ID → add a webhook to `https://<site>/api/revalidate` (projection and secret are in the checklist) → create an Editor token if you will use bulk import.
-2. **Cloudflare:** create a Worker from this GitHub repo. Build variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `CF_WORKER_NAME`, optionally `CF_ROUTE`. Worker secret: `SANITY_WEBHOOK_SECRET`. Build command `npm run cf:build`, deploy command `npm run cf:ship`.
+2. **Cloudflare:** create a Worker from this GitHub repo. Build variables: `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `CF_WORKER_NAME`, optionally `CF_ROUTE` and `CF_CACHE` (`r2` default; `kv` for a test site on an account without R2). Worker secret: `SANITY_WEBHOOK_SECRET`. Build command `npm run cf:build`, deploy command `npm run cf:ship`.
 3. **Open `/studio` → Site Settings:** country, name, theme, modules, menus, ad/analytics IDs.
 4. Add authors, categories and articles (or `bulk-import`).
 5. **Launch:** review the legal pages, submit the sitemap in Search Console, set up AdSense (`ads.txt` is generated for you) and the consent banner.
