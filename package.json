@@ -1,0 +1,63 @@
+{
+  "name": "english-sites",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "One codebase for English AdSense, affiliate and digital-product sites. Each site = this repo + its own Cloudflare Worker + its own Sanity project.",
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "cf:config": "tsx scripts/generate-wrangler.ts",
+    "cf:build": "npm run cf:config && opennextjs-cloudflare build",
+    "cf:preview": "npm run cf:build && opennextjs-cloudflare preview",
+    "cf:deploy": "npm run cf:config && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "studio:deploy": "sanity deploy",
+    "seed": "tsx scripts/seed.ts",
+    "bulk-import": "tsx scripts/bulk-import.ts",
+    "sync-fonts": "tsx scripts/sync-fonts.ts",
+    "cf:ship": "tsx scripts/generate-wrangler.ts && opennextjs-cloudflare deploy"
+  },
+  "dependencies": {
+    "@sanity/image-url": "^2.1.1",
+    "lucide-react": "^1.61.0",
+    "next": "16.4.3",
+    "next-sanity": "^13.4.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "sanity": "^6.20.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/inter": "^5.3.0",
+    "@fontsource-variable/lora": "^5.3.0",
+    "@fontsource-variable/merriweather": "^5.3.0",
+    "@fontsource-variable/outfit": "^5.3.0",
+    "@fontsource-variable/playfair-display": "^5.3.0",
+    "@fontsource-variable/plus-jakarta-sans": "^5.3.0",
+    "@opennextjs/cloudflare": "^1.20.13",
+    "@sanity/client": "^8.11.0",
+    "@sanity/webhook": "^4.0.4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.21",
+    "dotenv": "^16.6.1",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.3",
+    "gray-matter": "^4.0.3",
+    "groq-js": "^2.0.1",
+    "marked": "^18.1.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.19",
+    "tsx": "^4.19.3",
+    "typescript": "^5",
+    "wrangler": "^4.152.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}
