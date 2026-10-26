@@ -13,12 +13,12 @@
     "cf:config": "tsx scripts/generate-wrangler.ts",
     "cf:build": "npm run cf:config && opennextjs-cloudflare build",
     "cf:preview": "npm run cf:build && opennextjs-cloudflare preview",
-    "cf:deploy": "npm run cf:config && opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "cf:deploy": "npm run cf:config && opennextjs-cloudflare build && opennextjs-cloudflare deploy --keep-vars",
     "studio:deploy": "sanity deploy",
     "seed": "tsx scripts/seed.ts",
     "bulk-import": "tsx scripts/bulk-import.ts",
     "sync-fonts": "tsx scripts/sync-fonts.ts",
-    "cf:ship": "tsx scripts/generate-wrangler.ts && opennextjs-cloudflare deploy"
+    "cf:ship": "tsx scripts/generate-wrangler.ts && opennextjs-cloudflare deploy --keep-vars"
   },
   "dependencies": {
     "@sanity/image-url": "^2.1.1",
