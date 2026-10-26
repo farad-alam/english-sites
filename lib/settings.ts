@@ -2,7 +2,7 @@ import { cache } from 'react'
 import { DEFAULT_SETTINGS } from './defaults'
 import { getCountry } from './country'
 import { getSettingsRaw } from '@/sanity/queries'
-import type { HomeSection, ModuleFlags, ModuleName, NavLink, SiteSettings } from '@/sanity/types'
+import type { FooterColumnEntry, HomeSection, LinkEntry, MenuEntry, ModuleFlags, ModuleName, SiteSettings } from '@/sanity/types'
 
 /** False when an internal link points at a page that a switched-off module has removed. */
 function linkAllowed(href: string | undefined | null, modules: ModuleFlags): boolean {
@@ -18,8 +18,19 @@ function linkAllowed(href: string | undefined | null, modules: ModuleFlags): boo
 function pruneLinks(settings: SiteSettings): SiteSettings {
   const { modules } = settings
   const ok = (href?: string | null) => linkAllowed(href, modules)
-  const keep = (links: NavLink[] | undefined) => (links ?? []).filter((l) => ok(l.href))
   const cta = settings.nav.ctaHref && !ok(settings.nav.ctaHref)
+
+  const keepLink = <T extends LinkEntry>(e: T): boolean => {
+    if (e._type === 'navLink') return ok(e.href)
+    if (e._type === 'pageLink') return ok(e.page)
+    return modules.blog // a category link needs the blog module
+  }
+  const keepMenu = (e: MenuEntry): boolean => (e._type === 'autoCategories' ? modules.blog : keepLink(e))
+  const keepColumn = (c: FooterColumnEntry): FooterColumnEntry | null => {
+    if (c._type === 'footerCategoriesColumn') return modules.blog ? c : null
+    const links = (c.links ?? []).filter(keepLink)
+    return links.length ? { ...c, links } : null
+  }
 
   const sections = settings.homeSections.map((section): HomeSection => {
     if (section._type === 'heroSection') {
@@ -35,10 +46,10 @@ function pruneLinks(settings: SiteSettings): SiteSettings {
 
   return {
     ...settings,
-    nav: { ...settings.nav, links: keep(settings.nav.links), ...(cta ? { ctaHref: undefined, ctaLabel: undefined } : {}) },
+    nav: { ...settings.nav, items: settings.nav.items.filter(keepMenu), ...(cta ? { ctaHref: undefined, ctaLabel: undefined } : {}) },
     footer: {
       ...settings.footer,
-      columns: settings.footer.columns.map((c) => ({ ...c, links: keep(c.links) })).filter((c) => c.links.length),
+      columns: settings.footer.columns.map(keepColumn).filter((c): c is FooterColumnEntry => c !== null),
     },
     homeSections: sections,
   }
@@ -62,10 +73,15 @@ function mergeSettings(raw: Partial<SiteSettings> | null | undefined): SiteSetti
     nav: {
       ...d.nav,
       ...stripNulls(r.nav),
-      links: r.nav?.links ?? [],
-      showCategories: r.nav?.showCategories ?? d.nav.showCategories,
+      items: r.nav?.items ?? [],
+      maxVisible: r.nav?.maxVisible ?? d.nav.maxVisible,
     },
-    footer: { ...d.footer, ...stripNulls(r.footer), columns: r.footer?.columns ?? [] },
+    footer: {
+      ...d.footer,
+      ...stripNulls(r.footer),
+      style: r.footer?.style === 'light' ? 'light' : 'brand',
+      columns: r.footer?.columns ?? [],
+    },
     social: { ...stripNulls(r.social) },
     homeSections: r.homeSections ?? [],
     ads: {

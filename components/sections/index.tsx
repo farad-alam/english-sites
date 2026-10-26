@@ -7,6 +7,7 @@ import FeaturedPosts from './FeaturedPosts'
 import Hero from './Hero'
 import LatestPosts from './LatestPosts'
 import RichText from './RichText'
+import TrendingPosts from './TrendingPosts'
 import TopOffers from './TopOffers'
 import TopPicks from './TopPicks'
 import Trust from './Trust'
@@ -21,6 +22,7 @@ type Renderer = (section: never, settings: SiteSettings) => ReactNode
 
 const REGISTRY: Record<HomeSection['_type'], { requires?: ModuleName; render: Renderer }> = {
   heroSection: { render: ((s, st) => <Hero section={s} settings={st} />) as Renderer },
+  trendingPostsSection: { requires: 'blog', render: ((s, st) => <TrendingPosts section={s} settings={st} />) as Renderer },
   latestPostsSection: { requires: 'blog', render: ((s, st) => <LatestPosts section={s} settings={st} />) as Renderer },
   featuredPostsSection: { requires: 'blog', render: ((s, st) => <FeaturedPosts section={s} settings={st} />) as Renderer },
   categoryShelvesSection: { requires: 'blog', render: ((s, st) => <CategoryShelves section={s} settings={st} />) as Renderer },

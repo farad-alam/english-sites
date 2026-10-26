@@ -26,42 +26,107 @@ const ctaFields = (name: string, title: string) =>
     ],
   })
 
+/**
+ * Article picker. Type part of the title OR the slug (the URL part, e.g. "best-car-vacuum")
+ * to find an article among hundreds, then drag the picks into order.
+ */
+const postPicker = (opts: { name: string; title: string; description: string; max: number }) =>
+  defineField({
+    name: opts.name,
+    title: opts.title,
+    description: opts.description,
+    type: 'array',
+    of: [
+      defineArrayMember({
+        type: 'reference',
+        to: [{ type: 'post' }],
+        options: { disableNew: true, filter: 'defined(slug.current)' },
+      }),
+    ],
+    validation: (r) => r.max(opts.max).unique(),
+  })
+
 export const heroSectionSchema = defineType({
   name: 'heroSection',
-  title: 'Hero',
+  title: 'Hero (top banner)',
   type: 'object',
   fields: [
-    defineField({ name: 'eyebrow', title: 'Small label above the heading', type: 'string' }),
+    defineField({ name: 'eyebrow', title: 'Small label above the heading', type: 'string', description: 'Optional, e.g. "Independent reviews".' }),
     defineField({ name: 'heading', title: 'Heading', type: 'string', description: 'Empty = the site name.' }),
     defineField({ name: 'subheading', title: 'Sub-heading', type: 'text', rows: 2, description: 'Empty = the site tagline.' }),
+    defineField({
+      name: 'image',
+      title: 'Background image',
+      type: 'image',
+      options: { hotspot: true },
+      description:
+        'Optional. Wide photo, at least 1600 px across. It is resized automatically by Sanity, so any size is fine; without one the hero uses your brand colour. Drag the hotspot to keep the important part in view on phones.',
+      fields: [{ name: 'alt', type: 'string', title: 'Alt text (only for the side-by-side layout)' }],
+    }),
+    defineField({
+      name: 'overlay',
+      title: 'Darkness over the image',
+      type: 'string',
+      description: 'Keeps the text readable on a busy photo.',
+      options: { list: [{ title: 'Light', value: 'light' }, { title: 'Medium (default)', value: 'medium' }, { title: 'Dark', value: 'dark' }], layout: 'radio', direction: 'horizontal' },
+      initialValue: 'medium',
+    }),
     defineField({
       name: 'variant',
       title: 'Layout',
       type: 'string',
-      options: { list: [{ title: 'Centered text', value: 'centered' }, { title: 'Text + image side by side', value: 'split' }], layout: 'radio' },
+      options: { list: [{ title: 'Centered text (image behind)', value: 'centered' }, { title: 'Text + image side by side', value: 'split' }], layout: 'radio' },
       initialValue: 'centered',
     }),
     defineField({ name: 'showSearch', title: 'Show a search box', type: 'boolean', initialValue: true }),
-    ctaFields('primaryCta', 'Main button'),
-    ctaFields('secondaryCta', 'Second button'),
-    defineField({ name: 'image', title: 'Image (split layout)', type: 'image', options: { hotspot: true }, fields: [{ name: 'alt', type: 'string', title: 'Alt text' }] }),
+    defineField({ name: 'showTopics', title: 'Show category shortcuts under the search box', type: 'boolean', initialValue: true }),
+    ctaFields('primaryCta', 'Main button (optional)'),
+    ctaFields('secondaryCta', 'Second button (optional)'),
     disabledField,
   ],
-  preview: { select: { title: 'heading' }, prepare: ({ title }) => ({ title: 'Hero', subtitle: title }) },
+  preview: { select: { title: 'heading', media: 'image' }, prepare: ({ title, media }) => ({ title: 'Hero', subtitle: title, media }) },
+})
+
+export const trendingPostsSectionSchema = defineType({
+  name: 'trendingPostsSection',
+  title: 'Trending articles (hand-picked, up to 6)',
+  type: 'object',
+  fields: [
+    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'Trending articles' }),
+    postPicker({
+      name: 'posts',
+      title: 'Articles (up to 6, shown 3 per row)',
+      description:
+        'Pick the articles that perform best (check Search Console). Click the box and type part of the title or the slug to find one. Nothing picked = this section is hidden.',
+      max: 6,
+    }),
+    disabledField,
+  ],
+  preview: {
+    select: { title: 'title', posts: 'posts' },
+    prepare: ({ title, posts }) => ({ title: 'Trending articles', subtitle: `${title ?? ''} · ${(posts ?? []).length} picked` }),
+  },
 })
 
 export const latestPostsSectionSchema = defineType({
   name: 'latestPostsSection',
-  title: 'Latest articles',
+  title: 'Recently published',
   type: 'object',
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'Latest articles' }),
-    defineField({ name: 'count', title: 'How many', type: 'number', initialValue: 6, validation: (r) => r.min(3).max(24) }),
+    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'Recently published' }),
+    defineField({
+      name: 'count',
+      title: 'How many articles',
+      type: 'number',
+      description: 'The newest articles, 3 per row.',
+      options: { list: [6, 9, 12, 15].map((n) => ({ title: `${n} articles (${n / 3} rows)`, value: n })), layout: 'radio', direction: 'horizontal' },
+      initialValue: 6,
+    }),
     defineField({ name: 'category', title: 'Only from this category (optional)', type: 'reference', to: [{ type: 'category' }] }),
-    defineField({ name: 'showViewAll', title: 'Show "View all" link', type: 'boolean', initialValue: true }),
+    defineField({ name: 'showViewAll', title: 'Show "All articles" link', type: 'boolean', initialValue: true }),
     disabledField,
   ],
-  preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: 'Latest articles', subtitle: title }) },
+  preview: { select: { title: 'title', count: 'count' }, prepare: ({ title, count }) => ({ title: 'Recently published', subtitle: `${title ?? ''} · ${count ?? 6} newest` }) },
 })
 
 export const featuredPostsSectionSchema = defineType({
@@ -69,17 +134,23 @@ export const featuredPostsSectionSchema = defineType({
   title: 'Featured articles (hand-picked)',
   type: 'object',
   fields: [
-    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'Editor’s picks' }),
-    defineField({
+    defineField({ name: 'title', title: 'Title', type: 'string', initialValue: 'Featured articles' }),
+    postPicker({
       name: 'posts',
-      title: 'Articles (first one is shown large)',
-      type: 'array',
-      of: [defineArrayMember({ type: 'reference', to: [{ type: 'post' }] })],
-      validation: (r) => r.min(1).max(7),
+      title: 'Articles (the first one is shown large)',
+      description:
+        'Usually your money articles (best-of lists, reviews), but any article works. Click the box and type part of the title or the slug. Nothing picked = this section is hidden.',
+      max: 5,
     }),
     disabledField,
   ],
-  preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: 'Featured articles', subtitle: title }) },
+  preview: {
+    select: { title: 'title', posts: 'posts', disabled: 'disabled' },
+    prepare: ({ title, posts, disabled }) => ({
+      title: 'Featured articles',
+      subtitle: `${title ?? ''} · ${(posts ?? []).length} picked${disabled ? ' · hidden' : ''}`,
+    }),
+  },
 })
 
 export const categoryShelvesSectionSchema = defineType({
@@ -284,6 +355,7 @@ export const ctaSectionSchema = defineType({
 
 export const sectionSchemas = [
   heroSectionSchema,
+  trendingPostsSectionSchema,
   latestPostsSectionSchema,
   featuredPostsSectionSchema,
   categoryShelvesSectionSchema,

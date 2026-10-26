@@ -5,7 +5,7 @@ import { authorSchema } from './author'
 import { offerSchema } from './offer'
 import { affiliateLinkSchema } from './affiliateLink'
 import { staticPageSchema } from './staticPage'
-import { navLinkSchema } from './objects/navLink'
+import { autoCategoriesSchema, categoryLinkSchema, navLinkSchema, pageLinkSchema } from './objects/navLink'
 import { productCardSchema } from './blocks/productCard'
 import { productComparisonTableSchema } from './blocks/productComparisonTable'
 import { offerCardSchema } from './blocks/offerCard'
@@ -25,6 +25,9 @@ export const schemaTypes = [
   staticPageSchema,
   // Reusable objects
   navLinkSchema,
+  pageLinkSchema,
+  categoryLinkSchema,
+  autoCategoriesSchema,
   // Article / review blocks
   productCardSchema,
   productComparisonTableSchema,

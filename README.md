@@ -26,7 +26,7 @@ New site = new Sanity project + new Worker + five variables. No code change. A c
 
 Switch a module off and its pages return 404, disappear from the sitemap and menus, and its home-page sections vanish.
 
-Always on: AdSense slots (top, in-article, sidebar, optional Auto ads), `ads.txt`, Google’s free Privacy & messaging consent banner for UK/EEA visitors, GA4, Microsoft Clarity, sitemap index, `robots.txt`, noindex controls, country-aware default legal pages (US, UK, Canada, Australia), and a **home page built from reusable sections** (hero, latest posts, featured posts, category shelves, category grid, top picks, top offers, FAQ, trust badges, rich text, call to action).
+Always on: AdSense slots (top, in-article, sidebar, optional Auto ads), `ads.txt`, Google’s free Privacy & messaging consent banner for UK/EEA visitors, GA4, Microsoft Clarity, sitemap index, `robots.txt`, noindex controls, country-aware default legal pages (US, UK, Canada, Australia), and a **ready-made home page** you can reshape with reusable sections (see below).
 
 ---
 
@@ -64,6 +64,23 @@ Useful commands:
 | `npm run cf:deploy` | Builds and deploys from your computer (needs Cloudflare login). |
 | `npm run sync-fonts` | After adding a font: copies its files into `public/fonts`. |
 | `npm run lint` / `npm run typecheck` | Checks. |
+
+---
+
+## The built-in home page, menu and footer
+
+A new site needs no layout work. Out of the box it gets the layout below. Every change is made in Studio → Site Settings:
+
+| Part | What it shows | What the owner can change (Studio → Site Settings) |
+| --- | --- | --- |
+| **Header menu** | Every top-level category (sub-categories as a drop-down), plus Offers if that module is on. | *4 · Menu & footer → Header menu*: add, reorder or remove entries. An entry can be the automatic **All categories** block, one category, a built-in page (About, Contact…) or any custom link. Entries beyond *Items shown in the bar* collapse under a “More” drop-down. Optional button on the right. |
+| **Hero** | Light, fast hero: a heading, subheading, search box, popular-topic chips and buttons over a colour or a background image (served at reduced quality, loaded first). | *Home page sections → Hero*: text, background image, overlay strength, layout, buttons. |
+| **Trending articles** | Two rows of three. Hidden until the owner picks articles. | *Home page sections → Trending articles*: pick up to 6. The picker searches by title **or slug**, and shows each slug, so you can paste a URL path from Search Console. |
+| **Recently published** | The newest articles in the same 3-column layout. Default 6. | *Home page sections → Recently published*: show 6, 9, 12 or 15; optionally limit to one category. |
+| **Featured articles** | The “money” articles: one large card and a short list. Switched **off** by default. | *Home page sections → Featured articles*: pick up to 5 and untick *Hide this section*. |
+| **Footer** | Brand colour, logo and blurb, social icons, Categories, Quick Links, Contact, copyright and affiliate disclosure. | *4 · Menu & footer → Footer*: style (brand colour or light), blurb, social links, and up to four columns — Categories or your own link lists — in any order; copyright and disclosure text. |
+
+The *Home page* list starts pre-filled with these blocks (see `lib/home-template.ts`), so the owner edits what is there instead of starting from an empty page. More blocks (category shelves, top picks, top offers, FAQ, trust badges, rich text, call to action…) can be added from the section library. A site whose Home page list is empty falls back to the same layout.
 
 ---
 
@@ -134,7 +151,7 @@ open-next.config.ts  Cloudflare cache wiring (R2 pages, Durable Objects for tags
 
 **Cache tags** (see `sanity/queries.ts` and `app/api/revalidate/route.ts`): `siteSettings`, `posts`, `post:<slug>`, `category:<id>`, `categories`, `authors`, `offers`, `offer:<slug>`, `affiliateLinks`, `staticPages`.
 
-**Adding a home-page section:** add a schema in `sanity/schemas/sections/`, a component in `components/sections/`, register it in `components/sections/index.tsx`, and (if it needs references) project them in `getSettingsRaw`.
+**Adding a home-page section:** add a schema in `sanity/schemas/sections/`, a component in `components/sections/`, register it in `components/sections/index.tsx`, and (if it needs references) project them in `getSettingsRaw`. The pre-filled layout lives in `lib/home-template.ts`; menu and footer logic in `lib/nav.ts`.
 
 **Adding a font:** `npm i -D @fontsource-variable/<name>`, add a row in `lib/fonts.ts`, run `npm run sync-fonts`.
 

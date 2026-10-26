@@ -1,6 +1,7 @@
 import { defineArrayMember, defineField, defineType } from 'sanity'
 import { COUNTRIES } from '../../lib/country'
 import { FONT_OPTIONS } from '../../lib/fonts'
+import { DEFAULT_HOME_SECTIONS } from '../../lib/home-template'
 import { THEME_PRESETS } from '../../lib/theme'
 
 const HEX = /^#[0-9a-fA-F]{6}$/
@@ -186,19 +187,29 @@ export const siteSettingsSchema = defineType({
       type: 'object',
       group: 'navigation',
       options: collapsible,
+      description:
+        'Leave "Menu items" empty and the menu is simply all your categories, kept up to date automatically. Add items only if you want something different: for example a Contact link, or a custom order. Drag items to reorder.',
       fields: [
         defineField({
-          name: 'links',
-          title: 'Menu links',
+          name: 'items',
+          title: 'Menu items (empty = all categories, automatic)',
           type: 'array',
-          of: [defineArrayMember({ type: 'navLink' })],
-          description: 'Leave empty to get an automatic menu (Blog, Offers, About …) based on the enabled modules.',
+          description:
+            'To add a link AND keep every category: add "All categories (automatic)" first, then your extra links. Drag them into the order you like.',
+          of: [
+            defineArrayMember({ type: 'autoCategories' }),
+            defineArrayMember({ type: 'categoryLink' }),
+            defineArrayMember({ type: 'pageLink' }),
+            defineArrayMember({ type: 'navLink' }),
+          ],
         }),
         defineField({
-          name: 'showCategories',
-          title: 'Show top categories in the menu',
-          type: 'boolean',
-          initialValue: true,
+          name: 'maxVisible',
+          title: 'Items shown in the bar',
+          type: 'number',
+          description: 'Anything beyond this moves into a "More" drop-down so the bar never overflows. Lower it if your category names are long.',
+          initialValue: 6,
+          validation: (r) => r.min(3).max(10).integer(),
         }),
         defineField({ name: 'ctaLabel', title: 'Menu button label (optional)', type: 'string' }),
         defineField({ name: 'ctaHref', title: 'Menu button link', type: 'string' }),
@@ -210,22 +221,51 @@ export const siteSettingsSchema = defineType({
       type: 'object',
       group: 'navigation',
       options: collapsible,
+      description:
+        'Leave "Columns" empty for the standard footer: Categories, Quick Links (About, Contact, Affiliate Disclosure, Privacy, Terms) and Contact. Add columns to take full control; drag columns and links to reorder.',
       fields: [
-        defineField({ name: 'blurb', title: 'About blurb', type: 'text', rows: 3, validation: (r) => r.max(300) }),
+        defineField({
+          name: 'style',
+          title: 'Look',
+          type: 'string',
+          options: { list: [{ title: 'Brand colour (white text)', value: 'brand' }, { title: 'Light', value: 'light' }], layout: 'radio', direction: 'horizontal' },
+          initialValue: 'brand',
+        }),
+        defineField({ name: 'blurb', title: 'About text under the logo', type: 'text', rows: 3, description: 'Empty = the site tagline.', validation: (r) => r.max(300) }),
         defineField({
           name: 'columns',
-          title: 'Link columns',
+          title: 'Columns (empty = Categories + Quick Links + Contact)',
           type: 'array',
-          description: 'Leave empty for an automatic footer (categories + legal pages).',
+          validation: (r) => r.max(4),
           of: [
             defineArrayMember({
               type: 'object',
-              name: 'footerColumn',
+              name: 'footerCategoriesColumn',
+              title: 'Categories (automatic)',
+              fields: [
+                defineField({ name: 'title', type: 'string', title: 'Column title', initialValue: 'Categories' }),
+                defineField({ name: 'limit', type: 'number', title: 'How many categories', initialValue: 8, validation: (r) => r.min(2).max(12).integer() }),
+                defineField({ name: 'showIcons', type: 'boolean', title: 'Show each category’s emoji icon', initialValue: true }),
+              ],
+              preview: { select: { title: 'title' }, prepare: ({ title }) => ({ title: title || 'Categories', subtitle: 'Automatic list of categories' }) },
+            }),
+            defineArrayMember({
+              type: 'object',
+              name: 'footerLinksColumn',
+              title: 'Links column',
               fields: [
                 defineField({ name: 'title', type: 'string', title: 'Column title', validation: (r) => r.required() }),
-                defineField({ name: 'links', type: 'array', title: 'Links', of: [defineArrayMember({ type: 'navLink' })] }),
+                defineField({
+                  name: 'links',
+                  type: 'array',
+                  title: 'Links (drag to reorder)',
+                  of: [defineArrayMember({ type: 'pageLink' }), defineArrayMember({ type: 'categoryLink' }), defineArrayMember({ type: 'navLink' })],
+                }),
               ],
-              preview: { select: { title: 'title' } },
+              preview: {
+                select: { title: 'title', links: 'links' },
+                prepare: ({ title, links }) => ({ title: title || 'Links', subtitle: `${(links ?? []).length} links` }),
+              },
             }),
           ],
         }),
@@ -233,7 +273,14 @@ export const siteSettingsSchema = defineType({
           name: 'copyright',
           title: 'Copyright line',
           type: 'string',
-          description: 'Leave empty for "© {year} {site name}".',
+          description: 'Leave empty for "© {year} {site name}. All rights reserved."',
+        }),
+        defineField({
+          name: 'disclosure',
+          title: 'Disclosure text (bottom right)',
+          type: 'text',
+          rows: 2,
+          description: 'Leave empty for the standard affiliate disclosure (shown only when the Affiliate or Offers module is on).',
         }),
       ],
     }),
@@ -255,9 +302,11 @@ export const siteSettingsSchema = defineType({
       type: 'array',
       group: 'home',
       description:
-        'Build the home page from ready-made sections and drag them into order. Leave empty to get a sensible default for the enabled modules.',
+        'The home page is built from these blocks, top to bottom. A new site starts with Hero, Trending, Recently published and Featured (hidden until you switch it on). Edit them, drag to reorder, hide with "Hide this section", or add more from the library.',
+      initialValue: DEFAULT_HOME_SECTIONS,
       of: [
         defineArrayMember({ type: 'heroSection' }),
+        defineArrayMember({ type: 'trendingPostsSection' }),
         defineArrayMember({ type: 'latestPostsSection' }),
         defineArrayMember({ type: 'featuredPostsSection' }),
         defineArrayMember({ type: 'categoryShelvesSection' }),

@@ -140,11 +140,14 @@ export const postSchema = defineType({
       ],
     }),
   ],
+  // The slug is the preview "subtitle" on purpose: Studio search gives title (weight 10) and
+  // subtitle (weight 5) priority, so typing part of the URL finds an article, and the picker
+  // shows the slug next to every result. This is what makes the Trending / Featured pickers usable with 500+ articles.
   preview: {
-    select: { title: 'title', media: 'mainImage', date: 'publishedAt', category: 'category.title' },
-    prepare: ({ title, media, date, category }) => ({
+    select: { title: 'title', subtitle: 'slug.current', media: 'mainImage', date: 'publishedAt', category: 'category.title' },
+    prepare: ({ title, subtitle, media, date, category }) => ({
       title: title ?? 'Untitled',
-      subtitle: [category, date ? new Date(date).toLocaleDateString('en-GB') : 'Draft'].filter(Boolean).join(' · '),
+      subtitle: [subtitle ? `/${subtitle}` : '', category, date ? new Date(date).toLocaleDateString('en-GB') : 'Draft'].filter(Boolean).join(' · '),
       media,
     }),
   },

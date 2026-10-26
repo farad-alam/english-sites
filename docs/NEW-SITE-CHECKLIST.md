@@ -45,7 +45,7 @@ Use **Workers Paid ($5/month, one plan for all your sites)** for any site you wa
    | `CF_ROUTE` | `cozydesk.com` | optional; adds apex + `www` custom domains if the domain is on Cloudflare |
    | `CF_CACHE` | `kv` | optional; `r2` (default) caches pages in R2 and needs R2 switched on for the account (payment method on file, free tier included). `kv` uses Workers KV instead: no billing step, but small free limits, so use it for test sites only |
 
-5. **Worker secret** (Settings → Variables and secrets → *Secret*): `SANITY_WEBHOOK_SECRET` = the string from step 1.4.
+5. **Worker secret** (Settings → Variables and secrets, the *runtime* list at the top, not the Build one): **Add variable** → Type **Secret** → `SANITY_WEBHOOK_SECRET` = the string from step 1.4 → Deploy. The deploy command uses `--keep-vars`, so later rebuilds keep it. Check: `POST /api/revalidate` without a signature should answer `401 Invalid signature` (a `500 … not set` means the secret is missing).
 6. Deploy. The first run creates the cache store `cozy-desk-cache` automatically (an R2 bucket, or a KV namespace when `CF_CACHE=kv`). If it reports that it could not, create one with exactly that name in **R2** (or **Workers KV**) and redeploy. R2 must first be enabled for the account (R2 → Add R2 subscription; Cloudflare asks for a payment method).
 7. Open the `*.workers.dev` address: you should see the setup/empty site. Open `/studio`, sign in.
 
@@ -58,8 +58,8 @@ Studio → **Site Settings**. Nothing here needs code.
 - [ ] **Identity:** site name, tagline, **country** (en-US / en-GB / en-CA / en-AU: sets spelling, dates, currency, Amazon store and legal wording), logo, contact email
 - [ ] **Modules:** Blog / Affiliate / Offers — switch on only what this site uses
 - [ ] **Theme:** preset or your own primary + accent colours, heading + body fonts, corner style
-- [ ] **Menu & footer** (optional — a sensible menu is generated automatically)
-- [ ] **Home page:** add sections in the order you want (an automatic home page is used until you add any)
+- [ ] **Header menu & Footer** (optional — by default the menu lists every category and the footer shows Categories, Quick Links and Contact). Add a “Contact” link, reorder entries, or build your own footer columns; add social profile links
+- [ ] **Home page:** already pre-filled (Hero → Trending → Recently published → Featured). Set the hero image and text; leave Trending empty until Search Console shows what performs (use the slug search); choose how many recent articles (6/9/12/15); turn Featured on once you have money articles
 - [ ] **Ads & affiliate:** AdSense publisher ID (`ca-pub-…`) and slot IDs; Amazon tracking ID; disclosure wording
 - [ ] **Analytics:** GA4 ID, Clarity ID, Search Console + Bing verification codes
 - [ ] **SEO:** title template, default description, default share image

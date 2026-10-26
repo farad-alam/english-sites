@@ -39,10 +39,12 @@ export default defineConfig({
   ],
   schema: {
     types: schemaTypes,
-    // Site Settings is a singleton: hide it from "New document".
-    templates: (templates) => templates.filter(({ schemaType }) => !SINGLETONS.includes(schemaType)),
   },
   document: {
+    // Site Settings is a singleton: hide it from the global "New document" menu. (Its starting
+    // values, such as the pre-filled home page, still apply when the document is first opened.)
+    newDocumentOptions: (prev, { creationContext }) =>
+      creationContext.type === 'global' ? prev.filter(({ templateId }) => !SINGLETONS.includes(templateId)) : prev,
     // …and don't allow duplicate / delete / unpublish on it.
     actions: (input, { schemaType }) =>
       SINGLETONS.includes(schemaType) ? input.filter(({ action }) => action && ['publish', 'discardChanges', 'restore'].includes(action)) : input,

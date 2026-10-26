@@ -5,6 +5,7 @@ import type {
   AffiliateLinkData,
   Author,
   Category,
+  NavCategory,
   Offer,
   OfferCardData,
   PostCardData,
@@ -72,9 +73,12 @@ export const getSettingsRaw = cache(async (): Promise<Partial<SiteSettings> | nu
       logo ${IMAGE},
       favicon ${IMAGE},
       seo { ..., defaultOgImage ${IMAGE} },
+      nav { ..., items[]{ ..., _type == "categoryLink" => { "categoryId": category._ref } } },
+      footer { ..., columns[]{ ..., links[]{ ..., _type == "categoryLink" => { "categoryId": category._ref } } } },
       homeSections[]{
         ...,
         _type == "heroSection" => { image ${IMAGE} },
+        _type == "trendingPostsSection" => { "postIds": posts[]._ref },
         _type == "latestPostsSection" => { "categoryId": category._ref },
         _type == "featuredPostsSection" => { "postIds": posts[]._ref },
         _type == "categoryShelvesSection" => { "categoryIds": categories[]._ref },
@@ -346,10 +350,11 @@ export const getStaticPage = cache(async (key: string): Promise<StaticPageData |
 
 // ── Navigation (kept light so a new article never invalidates every page) ──
 
-export const getNavCategories = cache(async (): Promise<Pick<Category, '_id' | 'title' | 'slug'>[]> => {
-  return sanityFetch<Pick<Category, '_id' | 'title' | 'slug'>[]>({
-    query: `*[_type == "category" && defined(slug.current) && !defined(parent)]
-      | order(coalesce(order, 999) asc, title asc) [0...8] { _id, title, "slug": slug.current }`,
+/** Every category, in display order, with just what the menu and footer need. */
+export const getNavCategories = cache(async (): Promise<NavCategory[]> => {
+  return sanityFetch<NavCategory[]>({
+    query: `*[_type == "category" && defined(slug.current)]
+      | order(coalesce(order, 999) asc, title asc) [0...100] { _id, title, "slug": slug.current, icon, "parentId": parent._ref }`,
     tags: ['categories'],
     fallback: [],
   })

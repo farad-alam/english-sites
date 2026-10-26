@@ -16,7 +16,7 @@ export default async function FeaturedPosts({ section, settings }: { section: Fe
   return (
     <section className="py-10 md:py-14">
       <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-        <SectionHeading title={section.title || 'Editor’s picks'} />
+        <SectionHeading title={section.title || 'Featured articles'} />
         <div className="grid gap-6 lg:grid-cols-5">
           <Link href={`/${lead.slug}`} className="group lg:col-span-3 relative block rounded-2xl overflow-hidden border border-surface-border bg-surface-raised min-h-[320px]">
             <SanityImage image={lead.mainImage} alt={lead.mainImage?.alt || lead.title} sizes="(min-width: 1024px) 60vw, 100vw" className="transition-transform duration-500 group-hover:scale-[1.03]" />
@@ -29,7 +29,7 @@ export default async function FeaturedPosts({ section, settings }: { section: Fe
           </Link>
           {rest.length > 0 && (
             <div className="lg:col-span-2 grid gap-4 content-start">
-              {rest.slice(0, 3).map((p) => (
+              {rest.slice(0, 4).map((p) => (
                 <PostCard key={p._id} post={p} country={country} variant="row" />
               ))}
             </div>

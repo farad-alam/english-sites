@@ -17,12 +17,65 @@ export type PortableTextBlock = {
   [key: string]: unknown
 }
 
+/** A resolved link, ready to render. */
 export interface NavLink {
   _key?: string
   label: string
   href: string
   newTab?: boolean
 }
+
+/** A category as the menu and footer need it (kept light so a new article never invalidates every page). */
+export interface NavCategory {
+  _id: string
+  title: string
+  slug: string
+  icon?: string
+  parentId?: string
+}
+
+// Menu and footer entries exactly as stored in Sanity (references already flattened to ids).
+export interface CustomLinkEntry {
+  _type: 'navLink'
+  _key: string
+  label: string
+  href: string
+  newTab?: boolean
+}
+export interface PageLinkEntry {
+  _type: 'pageLink'
+  _key: string
+  page?: string
+  label?: string
+}
+export interface CategoryLinkEntry {
+  _type: 'categoryLink'
+  _key: string
+  categoryId?: string
+  label?: string
+}
+export interface AutoCategoriesEntry {
+  _type: 'autoCategories'
+  _key: string
+  showSubcategories?: boolean
+}
+export type LinkEntry = CustomLinkEntry | PageLinkEntry | CategoryLinkEntry
+export type MenuEntry = LinkEntry | AutoCategoriesEntry
+
+export interface FooterCategoriesColumn {
+  _type: 'footerCategoriesColumn'
+  _key: string
+  title?: string
+  limit?: number
+  showIcons?: boolean
+}
+export interface FooterLinksColumn {
+  _type: 'footerLinksColumn'
+  _key: string
+  title?: string
+  links?: LinkEntry[]
+}
+export type FooterColumnEntry = FooterCategoriesColumn | FooterLinksColumn
 
 // ── Site Settings ───────────────────────────────────────────────────────────
 
@@ -47,9 +100,13 @@ export interface HeroSection {
   subheading?: string
   variant?: 'centered' | 'split'
   showSearch?: boolean
+  showTopics?: boolean
   primaryCta?: HomeCta
   secondaryCta?: HomeCta
+  /** Background picture (centered layout) or side picture (split layout) */
   image?: SanityImageValue
+  /** How dark the veil over a background picture is */
+  overlay?: 'light' | 'medium' | 'dark'
 }
 
 export interface LatestPostsSection {
@@ -59,6 +116,13 @@ export interface LatestPostsSection {
   count?: number
   categoryId?: string
   showViewAll?: boolean
+}
+
+export interface TrendingPostsSection {
+  _type: 'trendingPostsSection'
+  _key: string
+  title?: string
+  postIds?: string[]
 }
 
 export interface FeaturedPostsSection {
@@ -144,6 +208,7 @@ export interface CtaSection {
 
 export type HomeSection =
   | HeroSection
+  | TrendingPostsSection
   | LatestPostsSection
   | FeaturedPostsSection
   | CategoryShelvesSection
@@ -176,16 +241,21 @@ export interface SiteSettings {
   }
 
   nav: {
-    links: NavLink[]
-    showCategories: boolean
+    /** Empty = automatic menu (all categories) */
+    items: MenuEntry[]
+    /** Menu items shown in the bar before the rest move under "More" */
+    maxVisible: number
     ctaLabel?: string
     ctaHref?: string
   }
 
   footer: {
+    style: 'brand' | 'light'
     blurb?: string
-    columns: { _key?: string; title: string; links: NavLink[] }[]
+    /** Empty = Categories, Quick Links and Contact */
+    columns: FooterColumnEntry[]
     copyright?: string
+    disclosure?: string
   }
 
   social: {

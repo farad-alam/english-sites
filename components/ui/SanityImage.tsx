@@ -9,13 +9,15 @@ interface Props {
   className?: string
   sizes?: string
   priority?: boolean
+  /** 1–100. Lower = smaller file; large photos behind text look fine at ~60. */
+  quality?: number
 }
 
 /**
  * Responsive image that fills its (relatively positioned) parent.
  * Renders nothing when there is no image, so callers choose their own placeholder.
  */
-export default function SanityImage({ image, alt, className = '', sizes = '(min-width: 1024px) 400px, 100vw', priority }: Props) {
+export default function SanityImage({ image, alt, className = '', sizes = '(min-width: 1024px) 400px, 100vw', priority, quality }: Props) {
   const src = getBaseImageUrl(image)
   if (!src) return null
   // Images that are not on the Sanity CDN (a pasted URL) cannot be resized, so serve them as-is.
@@ -27,6 +29,7 @@ export default function SanityImage({ image, alt, className = '', sizes = '(min-
       fill
       sizes={sizes}
       priority={priority}
+      quality={quality}
       unoptimized={external}
       className={`object-cover ${className}`}
       style={{ objectPosition: hotspotPosition(image) }}

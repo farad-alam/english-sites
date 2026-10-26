@@ -422,24 +422,38 @@ const siteSettings: Doc = {
   modules: { blog: true, affiliate: true, offers: true },
   theme: { preset: 'ocean', headingFont: 'jakarta', bodyFont: 'inter', radius: 'soft' },
   nav: {
-    showCategories: true,
-    links: [
-      { _key: k(), label: 'Reviews', href: '/blog' },
-      { _key: k(), label: 'Deals', href: '/offers' },
+    // All categories (automatic), then two extra items: the menu order is whatever the editor drags it to.
+    items: [
+      { _type: 'autoCategories', _key: k(), showSubcategories: true },
+      { _type: 'navLink', _key: k(), label: 'Deals', href: '/offers' },
+      { _type: 'pageLink', _key: k(), page: '/contact' },
     ],
+    maxVisible: 6,
     ctaLabel: 'Top picks',
     ctaHref: '/best-standing-desks',
   },
   footer: {
+    style: 'brand',
     blurb: 'Independent reviews for people who work from home.',
     columns: [
+      { _type: 'footerCategoriesColumn', _key: k(), title: 'Categories', limit: 8, showIcons: true },
       {
+        _type: 'footerLinksColumn',
         _key: k(),
-        title: 'Company',
+        title: 'Quick Links',
         links: [
-          { _key: k(), label: 'About', href: '/about' },
-          { _key: k(), label: 'Contact', href: '/contact' },
+          { _type: 'pageLink', _key: k(), page: '/about' },
+          { _type: 'pageLink', _key: k(), page: '/contact' },
+          { _type: 'pageLink', _key: k(), page: '/disclosure' },
+          { _type: 'pageLink', _key: k(), page: '/privacy' },
+          { _type: 'pageLink', _key: k(), page: '/terms' },
         ],
+      },
+      {
+        _type: 'footerLinksColumn',
+        _key: k(),
+        title: 'Contact',
+        links: [{ _type: 'navLink', _key: k(), label: 'Get in touch →', href: '/contact' }],
       },
     ],
     copyright: 'Cozy Desk Co.',
@@ -458,7 +472,8 @@ const siteSettings: Doc = {
   analytics: { ga4Id: 'G-TEST123456', clarityId: 'abcd1234', googleVerification: 'google-demo-token' },
   seo: { titleTemplate: '%s | Cozy Desk Co.', defaultDescription: 'Independent reviews for a better home office.' },
   homeSections: [
-    { _type: 'heroSection', _key: 'h1', eyebrow: 'Independent reviews', heading: 'Work from home, comfortably', subheading: 'Tested desks, chairs and tools — no fluff.', variant: 'centered', showSearch: true, primaryCta: { label: 'Browse reviews', href: '/blog' } },
+    { _type: 'heroSection', _key: 'h1', eyebrow: 'Independent reviews', heading: 'Work from home, comfortably', subheading: 'Tested desks, chairs and tools — no fluff.', variant: 'centered', overlay: 'medium', showSearch: true, showTopics: true, image: { _type: 'image', externalUrl: 'https://picsum.photos/seed/hero-desk/1600/900', alt: '' }, primaryCta: { label: 'Browse reviews', href: '/blog' } },
+    { _type: 'trendingPostsSection', _key: 'h1b', title: 'Trending articles', posts: [ref('post-standing-desks'), ref('post-ergochair-review'), ref('post-home-office-budget'), ref('post-project-tools'), ref('post-smart-plugs')] },
     {
       _type: 'topPicksSection',
       _key: 'h2',
@@ -470,8 +485,8 @@ const siteSettings: Doc = {
       ],
     },
     { _type: 'topOffersSection', _key: 'h3', title: 'Top software deals', count: 3 },
-    { _type: 'latestPostsSection', _key: 'h4', title: 'Latest articles', count: 6, showViewAll: true },
-    { _type: 'featuredPostsSection', _key: 'h5', title: 'Editor’s picks', posts: [ref('post-project-tools'), ref('post-smart-plugs')] },
+    { _type: 'latestPostsSection', _key: 'h4', title: 'Recently published', count: 6, showViewAll: true },
+    { _type: 'featuredPostsSection', _key: 'h5', title: 'Featured articles', posts: [ref('post-project-tools'), ref('post-smart-plugs')] },
     { _type: 'categoryShelvesSection', _key: 'h6', title: 'Browse by topic', categories: [ref('cat-office'), ref('cat-software')], postsPerShelf: 3 },
     { _type: 'categoryGridSection', _key: 'h7', title: 'Explore topics' },
     { _type: 'trustSection', _key: 'h8', items: [{ _key: k(), icon: 'shield', title: 'Independent', text: 'We buy or borrow our own products.' }, { _key: k(), icon: 'refresh', title: 'Kept up to date', text: 'Guides are re-tested regularly.' }, { _key: k(), icon: 'star', title: 'Honest ratings', text: 'We say when something is not worth it.' }] },
