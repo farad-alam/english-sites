@@ -213,6 +213,16 @@ export const siteSettingsSchema = defineType({
         }),
         defineField({ name: 'ctaLabel', title: 'Menu button label (optional)', type: 'string' }),
         defineField({ name: 'ctaHref', title: 'Menu button link', type: 'string' }),
+        // From the first version of the menu. Only shown while a site still has links saved here; they
+        // are used until "Menu items" above is filled in. New sites never see this.
+        defineField({
+          name: 'links',
+          title: 'Old menu links (used only while "Menu items" is empty)',
+          type: 'array',
+          of: [defineArrayMember({ type: 'navLink' })],
+          hidden: ({ value }) => !Array.isArray(value) || value.length === 0,
+        }),
+        defineField({ name: 'showCategories', type: 'boolean', hidden: true }),
       ],
     }),
     defineField({

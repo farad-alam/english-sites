@@ -60,6 +60,19 @@ export function normalizeSettings(raw: Partial<SiteSettings> | null | undefined)
   return pruneLinks(mergeSettings(raw))
 }
 
+/** The plain "Menu links" list that sites saved before the menu builder existed. */
+interface LegacyNav {
+  links?: { _key?: string; label?: string; href?: string; newTab?: boolean }[] | null
+}
+
+/** Menu entries to use: the builder's items, or (for older saved sites) the old link list, so nobody's menu vanishes. */
+function menuItems(nav: (Partial<SiteSettings['nav']> & LegacyNav) | null | undefined): MenuEntry[] {
+  if (nav?.items?.length) return nav.items
+  return (nav?.links ?? [])
+    .filter((l) => l.label && l.href)
+    .map((l, i) => ({ _type: 'navLink' as const, _key: l._key ?? `legacy-${i}`, label: l.label as string, href: l.href as string, newTab: l.newTab }))
+}
+
 function mergeSettings(raw: Partial<SiteSettings> | null | undefined): SiteSettings {
   const d = DEFAULT_SETTINGS
   const r = raw ?? {}
@@ -73,7 +86,7 @@ function mergeSettings(raw: Partial<SiteSettings> | null | undefined): SiteSetti
     nav: {
       ...d.nav,
       ...stripNulls(r.nav),
-      items: r.nav?.items ?? [],
+      items: menuItems(r.nav),
       maxVisible: r.nav?.maxVisible ?? d.nav.maxVisible,
     },
     footer: {
