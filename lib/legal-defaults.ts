@@ -147,6 +147,7 @@ export function defaultPage(key: StaticPageKey, settings: SiteSettings): Default
             heading: 'Information only',
             paragraphs: [
               'Our content is for general information and entertainment. It is not professional financial, legal, medical or other advice. Always check details with the provider and consult a qualified professional where appropriate.',
+              ...(settings.termsNotice ? [settings.termsNotice] : []),
             ],
           },
           {
