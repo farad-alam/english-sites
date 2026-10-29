@@ -228,6 +228,7 @@ export interface SiteSettings {
   logoHeight?: number
   favicon?: SanityImageValue
   contactEmail?: string
+  termsNotice?: string
 
   modules: ModuleFlags
 
