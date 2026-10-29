@@ -85,11 +85,14 @@ export default function SiteHeader({ settings, categories }: Props) {
       <div className="max-w-page mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-6">
         <Logo settings={settings} />
 
-        <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-end" aria-label="Main">
+        <nav className="hidden lg:flex items-center gap-0.5 flex-1 justify-center" aria-label="Main">
           {visible.map((item) => (
             <BarItem key={`${item.href}-${item.label}`} item={item} />
           ))}
           {more.length > 0 && <MoreItem items={more} />}
+        </nav>
+
+        <div className="hidden lg:flex items-center gap-0.5">
           {showSearch && (
             <Link href="/search" aria-label="Search" className="inline-flex items-center justify-center w-11 h-11 rounded-lg text-text-primary/80 hover:text-brand-primary hover:bg-surface-hover transition-colors">
               <Search size={19} />
@@ -100,7 +103,7 @@ export default function SiteHeader({ settings, categories }: Props) {
               {ctaLabel}
             </Link>
           )}
-        </nav>
+        </div>
 
         <MobileMenu items={items} ctaLabel={ctaLabel} ctaHref={ctaHref} showSearch={showSearch} />
       </div>
