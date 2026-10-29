@@ -46,6 +46,13 @@ export function bodyField(opts: { name?: string; title?: string; group?: string;
                   description: 'Adds rel="sponsored nofollow". Tick for any affiliate link.',
                   initialValue: false,
                 },
+                {
+                  name: 'dofollow',
+                  type: 'boolean',
+                  title: 'Pass link credit (dofollow)',
+                  description: 'External links are nofollow by default. Tick this only for a link you fully trust and want to vouch for. Ignored for internal links and for sponsored links.',
+                  initialValue: false,
+                },
               ],
             },
           ],
