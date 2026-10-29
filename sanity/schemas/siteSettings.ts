@@ -87,6 +87,15 @@ export const siteSettingsSchema = defineType({
       description: 'Shown on the Contact page and in the default Privacy Policy.',
       validation: (r) => r.regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/, { name: 'email' }).error('Enter a valid email address'),
     }),
+    defineField({
+      name: 'termsNotice',
+      title: 'Terms: extra notice (optional)',
+      type: 'text',
+      rows: 3,
+      group: 'identity',
+      description:
+        'One extra paragraph added under "Information only" on the Terms page. Use it for a niche-specific disclaimer, e.g. "Nothing here is veterinary advice. Always consult a qualified vet about your pet\'s health."',
+    }),
 
     // ── 2. Modules ──────────────────────────────────────────────────────────
     defineField({
