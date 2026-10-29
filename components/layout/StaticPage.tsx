@@ -12,6 +12,9 @@ import { getSettings } from '@/lib/settings'
 import { getStaticPage } from '@/sanity/queries'
 import type { SiteSettings } from '@/sanity/types'
 
+/** Shown as "Last updated" on built-in legal pages that have no CMS document yet. Bump when the default wording changes. */
+const LEGAL_DEFAULTS_UPDATED = '2026-10-30'
+
 /** The disclosure page only exists when the site earns commissions. */
 function isAvailable(key: StaticPageKey, settings: SiteSettings): boolean {
   if (key === 'disclosure') return settings.modules.affiliate || settings.modules.offers
@@ -41,6 +44,7 @@ export default async function StaticPage({ pageKey }: { pageKey: StaticPageKey }
   const title = doc?.title || fallback.title
   const intro = doc ? doc.intro : fallback.intro
   const useCms = Boolean(doc?.body?.length)
+  const updatedAt = doc?.updatedAt || (['privacy', 'terms', 'disclosure'].includes(pageKey) ? LEGAL_DEFAULTS_UPDATED : null)
 
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
@@ -50,7 +54,7 @@ export default async function StaticPage({ pageKey }: { pageKey: StaticPageKey }
       <header className="mt-6 mb-8 pb-8 border-b border-surface-border">
         <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-text-primary text-balance">{title}</h1>
         {intro && <p className="mt-3 text-lg text-text-muted">{intro}</p>}
-        {doc?.updatedAt && <p className="mt-3 text-xs text-text-muted">Last updated {formatDate(doc.updatedAt, country)}</p>}
+        {updatedAt && <p className="mt-3 text-xs text-text-muted">Last updated {formatDate(updatedAt, country)}</p>}
       </header>
 
       <div className="article-body">
