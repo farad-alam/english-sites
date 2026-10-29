@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
 import { notFound } from 'next/navigation'
 import PortableText from '@/components/blog/PortableText'
 import JsonLd from '@/components/ui/JsonLd'
@@ -34,7 +35,7 @@ export async function staticPageMetadata(key: StaticPageKey): Promise<Metadata> 
   })
 }
 
-export default async function StaticPage({ pageKey }: { pageKey: StaticPageKey }) {
+export default async function StaticPage({ pageKey, footer }: { pageKey: StaticPageKey; footer?: ReactNode }) {
   const settings = await getSettings()
   if (!isAvailable(pageKey, settings)) notFound()
 
@@ -71,6 +72,7 @@ export default async function StaticPage({ pageKey }: { pageKey: StaticPageKey }
           ))
         )}
       </div>
+      {footer}
     </div>
   )
 }
