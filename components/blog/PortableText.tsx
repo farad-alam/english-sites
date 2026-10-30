@@ -220,10 +220,10 @@ export function createComponents(settings: SiteSettings, headings: HeadingInfo[]
       link: ({ children, value }) => {
         const href: string = value?.href ?? '#'
         const cls = 'text-brand-primary underline decoration-brand-primary/30 hover:decoration-brand-primary underline-offset-4 transition-colors break-words'
-        if (href.startsWith('/') && !value?.sponsored) {
+        if (href.startsWith('/') && !value?.sponsored && !value?.nofollow) {
           return <Link href={href} className={cls}>{children}</Link>
         }
-        const rel = [value?.blank || isExternal(href) ? 'noopener noreferrer' : '', value?.sponsored ? 'sponsored nofollow' : isExternal(href) && !value?.dofollow ? 'nofollow' : ''].filter(Boolean).join(' ')
+        const rel = [value?.blank || isExternal(href) ? 'noopener noreferrer' : '', value?.sponsored ? 'sponsored nofollow' : value?.nofollow ? 'nofollow' : ''].filter(Boolean).join(' ')
         return (
           <a href={href} target={value?.blank ? '_blank' : undefined} rel={rel || undefined} className={cls}>
             {children}
