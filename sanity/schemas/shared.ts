@@ -47,10 +47,10 @@ export function bodyField(opts: { name?: string; title?: string; group?: string;
                   initialValue: false,
                 },
                 {
-                  name: 'dofollow',
+                  name: 'nofollow',
                   type: 'boolean',
-                  title: 'Pass link credit (dofollow)',
-                  description: 'External links are nofollow by default. Tick this only for a link you fully trust and want to vouch for. Ignored for internal links and for sponsored links.',
+                  title: 'Nofollow (do not pass link credit)',
+                  description: 'Links pass credit by default, which is right for your own pages. Tick this for an outside link you do not want to vouch for. Not needed for sponsored links.',
                   initialValue: false,
                 },
               ],
