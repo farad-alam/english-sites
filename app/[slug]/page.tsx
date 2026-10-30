@@ -78,7 +78,6 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   const chunks = showAds && settings.ads.inArticleSlot ? splitBodyForAds(body) : [body]
   const url = absoluteUrl(`/${post.slug}`)
   const readTime = readTimeLabel(post.readMinutes)
-  const authorName = post.author ? `${post.author.firstName} ${post.author.lastName}`.trim() : null
   const updated = post.updatedAt && post.updatedAt.slice(0, 10) !== post.publishedAt.slice(0, 10)
 
   const crumbs = [
@@ -107,12 +106,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               {post.excerpt && <p className="mt-4 text-lg text-text-muted leading-relaxed">{post.excerpt}</p>}
 
               <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-muted">
-                {authorName && post.author && (
-                  <Link href={`/authors/${post.author.slug}`} className="font-semibold text-text-primary hover:text-brand-primary">
-                    {authorName}
-                  </Link>
-                )}
-                <time dateTime={post.publishedAt}>{formatDate(post.publishedAt, country)}</time>
+                <time dateTime={post.publishedAt}>Published {formatDate(post.publishedAt, country)}</time>
                 {updated && <span>· Updated <time dateTime={post.updatedAt}>{formatDate(post.updatedAt, country)}</time></span>}
                 {readTime && <span>· {readTime}</span>}
               </div>
