@@ -44,11 +44,12 @@ export const postSchema = defineType({
     }),
     defineField({
       name: 'mainImage',
-      title: 'Cover image',
+      title: 'Cover photo (1536 x 864)',
       type: 'image',
       group: 'content',
-      options: { hotspot: true },
-      description: 'Upload an image, or paste an image URL below (handy for bulk imports).',
+      options: { hotspot: true, accept: 'image/jpeg,image/webp,image/png' },
+      description:
+        'Recommended size: 1536 x 864 px (16:9). The article column is 768 px wide, so this is crisp on high-density screens, and the same 16:9 shape shows fully on the home page and article cards without cropping. JPG, WebP or PNG. Or paste an image URL below (handy for bulk imports).',
       fields: [
         { name: 'alt', type: 'string', title: 'Alt text', validation: (r) => r.required().error('Describe the cover image (alt text).') },
         { name: 'externalUrl', type: 'url', title: 'Image URL (instead of uploading)' },
@@ -99,7 +100,7 @@ export const postSchema = defineType({
     bodyField({
       group: 'content',
       title: 'Article body',
-      blocks: ['productCard', 'productComparisonTable', 'offerCard', 'prosConsBlock', 'faqBlock', 'calloutBlock'],
+      blocks: ['productCard', 'productComparisonTable', 'offerCard', 'prosConsBlock', 'faqBlock', 'calloutBlock', 'tableBlock', 'youtubeEmbed', 'checklistBlock'],
     }),
 
     // SEO

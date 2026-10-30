@@ -5,6 +5,7 @@ import { Check, X } from 'lucide-react'
 import OfferCard from '@/components/offers/OfferCard'
 import ProductComparisonTable, { type ComparisonRow } from './ProductComparisonTable'
 import SanityImage from '@/components/ui/SanityImage'
+import YouTubeEmbed from './YouTubeEmbed'
 import Stars from '@/components/ui/Stars'
 import { AFFILIATE_REL, defaultCtaLabel, isExternal, resolveHref } from '@/lib/affiliates'
 import type { HeadingInfo } from '@/lib/headings'
@@ -222,7 +223,7 @@ export function createComponents(settings: SiteSettings, headings: HeadingInfo[]
         if (href.startsWith('/') && !value?.sponsored) {
           return <Link href={href} className={cls}>{children}</Link>
         }
-        const rel = [value?.blank || isExternal(href) ? 'noopener noreferrer' : '', value?.sponsored ? 'sponsored nofollow' : ''].filter(Boolean).join(' ')
+        const rel = [value?.blank || isExternal(href) ? 'noopener noreferrer' : '', value?.sponsored ? 'sponsored nofollow' : isExternal(href) && !value?.dofollow ? 'nofollow' : ''].filter(Boolean).join(' ')
         return (
           <a href={href} target={value?.blank ? '_blank' : undefined} rel={rel || undefined} className={cls}>
             {children}
@@ -277,6 +278,67 @@ export function createComponents(settings: SiteSettings, headings: HeadingInfo[]
               <strong className="me-1.5">{s.label}:</strong>
               {value.text}
             </p>
+          </div>
+        )
+      },
+      tableBlock: ({ value }) => {
+        const rows: { _key?: string; cells?: string[] }[] = Array.isArray(value?.rows) ? value.rows : []
+        if (!rows.length) return null
+        const hasHeader = value?.firstRowHeader !== false
+        const head = hasHeader ? rows[0] : null
+        const body = hasHeader ? rows.slice(1) : rows
+        return (
+          <figure className="my-7 md:my-8">
+            <div
+              className="overflow-x-auto rounded-xl border border-surface-border"
+              role="region"
+              aria-label={value?.caption || 'Table'}
+              tabIndex={0}
+            >
+              <table className="w-full min-w-[32rem] border-collapse text-left text-[15px] leading-snug">
+                {head && (
+                  <thead className="bg-surface-raised">
+                    <tr>
+                      {(head.cells || []).map((c, i) => (
+                        <th key={i} scope="col" className="px-4 py-3 font-semibold text-text-primary border-b border-surface-border whitespace-nowrap">
+                          {c}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                )}
+                <tbody>
+                  {body.map((r, ri) => (
+                    <tr key={r._key || ri} className="even:bg-surface-raised/40">
+                      {(r.cells || []).map((c, i) => (
+                        <td key={i} className="px-4 py-3 align-top text-text-primary/90 border-b border-surface-border">
+                          {c}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {value?.caption && <figcaption className="mt-2 text-sm text-text-muted">{value.caption}</figcaption>}
+          </figure>
+        )
+      },
+      youtubeEmbed: ({ value }) => (value?.url ? <YouTubeEmbed url={value.url} title={value.title} /> : null),
+      checklistBlock: ({ value }) => {
+        const items: string[] = Array.isArray(value?.items) ? value.items.filter(Boolean) : []
+        if (!items.length) return null
+        return (
+          <div className="my-7 md:my-8 p-5 rounded-xl border border-surface-border bg-surface-raised">
+            {value?.title && <p className="font-heading font-bold text-text-primary mb-3">{value.title}</p>}
+            <ul className="space-y-2.5">
+              {items.map((item, i) => (
+                <li key={i} className="flex items-start gap-3 text-text-primary/90 text-[16px] leading-[1.7]">
+                  <Check size={18} aria-hidden="true" className="mt-1 shrink-0 text-brand-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         )
       },
