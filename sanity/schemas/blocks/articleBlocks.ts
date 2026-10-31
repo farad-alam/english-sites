@@ -105,3 +105,67 @@ export const checklistBlockSchema = defineType({
     }),
   },
 })
+
+
+export const chartBlockSchema = defineType({
+  name: 'chartBlock',
+  title: 'Chart',
+  type: 'object',
+  fields: [
+    defineField({ name: 'title', title: 'Chart title', type: 'string', validation: (r) => r.required() }),
+    defineField({
+      name: 'chartType',
+      title: 'Chart type',
+      type: 'string',
+      initialValue: 'bar',
+      options: {
+        layout: 'radio',
+        list: [
+          { title: 'Bars (compare amounts)', value: 'bar' },
+          { title: 'Line (change over time)', value: 'line' },
+          { title: 'Donut (share of a whole)', value: 'donut' },
+        ],
+      },
+    }),
+    defineField({
+      name: 'unit',
+      title: 'Unit (optional)',
+      type: 'string',
+      description: 'Shown after each number, for example %, gallons, USD or inches.',
+    }),
+    defineField({
+      name: 'points',
+      title: 'Data',
+      type: 'array',
+      description: 'One row per bar, point or slice. Keep it to 12 rows or fewer.',
+      of: [
+        {
+          type: 'object',
+          name: 'chartPoint',
+          fields: [
+            defineField({ name: 'label', title: 'Label', type: 'string', validation: (r) => r.required() }),
+            defineField({ name: 'value', title: 'Value', type: 'number', validation: (r) => r.required().min(0) }),
+          ],
+          preview: {
+            select: { title: 'label', value: 'value' },
+            prepare: ({ title, value }) => ({ title: title || 'Untitled', subtitle: String(value ?? '') }),
+          },
+        },
+      ],
+      validation: (r) => r.required().min(2).max(12),
+    }),
+    defineField({
+      name: 'caption',
+      title: 'Caption or source (optional)',
+      type: 'string',
+      description: 'One sentence that says what the chart shows. Search engines read this text.',
+    }),
+  ],
+  preview: {
+    select: { title: 'title', type: 'chartType', points: 'points' },
+    prepare: ({ title, type, points }) => ({
+      title: `Chart · ${title || 'untitled'}`,
+      subtitle: `${type || 'bar'} · ${(points || []).length} rows`,
+    }),
+  },
+})
