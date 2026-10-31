@@ -223,8 +223,7 @@ export function createComponents(settings: SiteSettings, headings: HeadingInfo[]
         const newTab = value?.blank !== false && !/^(#|mailto:|tel:)/.test(href)
         const flagged = Boolean(value?.sponsored || value?.nofollow)
         const rel = [
-          value?.sponsored ? 'sponsored nofollow' : value?.nofollow ? 'nofollow' : '',
-          flagged ? 'noopener noreferrer' : '',
+          value?.sponsored ? 'sponsored nofollow noopener' : value?.nofollow ? 'nofollow noopener noreferrer' : '',
         ].filter(Boolean).join(' ')
         if (href.startsWith('/') && !flagged) {
           return <Link href={href} target={newTab ? '_blank' : undefined} className={cls}>{children}</Link>
