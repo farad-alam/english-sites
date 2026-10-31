@@ -12,7 +12,7 @@ import { offerCardSchema } from './blocks/offerCard'
 import { prosConsBlockSchema } from './blocks/prosConsBlock'
 import { faqBlockSchema } from './blocks/faqBlock'
 import { calloutBlockSchema } from './blocks/calloutBlock'
-import { checklistBlockSchema, tableBlockSchema, youtubeEmbedSchema } from './blocks/articleBlocks'
+import { chartBlockSchema, checklistBlockSchema, tableBlockSchema, youtubeEmbedSchema } from './blocks/articleBlocks'
 import { sectionSchemas } from './sections'
 
 export const schemaTypes = [
@@ -38,6 +38,7 @@ export const schemaTypes = [
   calloutBlockSchema,
   tableBlockSchema,
   youtubeEmbedSchema,
+  chartBlockSchema,
   checklistBlockSchema,
   // Home page sections
   ...sectionSchemas,
