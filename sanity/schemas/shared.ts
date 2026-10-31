@@ -38,7 +38,13 @@ export function bodyField(opts: { name?: string; title?: string; group?: string;
               title: 'Link',
               fields: [
                 { name: 'href', type: 'string', title: 'URL', validation: (r) => r.required() },
-                { name: 'blank', type: 'boolean', title: 'Open in new tab', initialValue: false },
+                {
+                  name: 'blank',
+                  type: 'boolean',
+                  title: 'Open in new tab',
+                  description: 'On by default. Untick to open the link in the same tab.',
+                  initialValue: true,
+                },
                 {
                   name: 'sponsored',
                   type: 'boolean',
