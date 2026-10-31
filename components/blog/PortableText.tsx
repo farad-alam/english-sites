@@ -5,6 +5,7 @@ import { Check, X } from 'lucide-react'
 import OfferCard from '@/components/offers/OfferCard'
 import ProductComparisonTable, { type ComparisonRow } from './ProductComparisonTable'
 import SanityImage from '@/components/ui/SanityImage'
+import ChartBlock from './ChartBlock'
 import YouTubeEmbed from './YouTubeEmbed'
 import Stars from '@/components/ui/Stars'
 import { AFFILIATE_REL, defaultCtaLabel, isExternal, resolveHref } from '@/lib/affiliates'
@@ -329,6 +330,7 @@ export function createComponents(settings: SiteSettings, headings: HeadingInfo[]
         )
       },
       youtubeEmbed: ({ value }) => (value?.url ? <YouTubeEmbed url={value.url} title={value.title} /> : null),
+      chartBlock: ({ value }) => <ChartBlock value={value} />,
       checklistBlock: ({ value }) => {
         const items: string[] = Array.isArray(value?.items) ? value.items.filter(Boolean) : []
         if (!items.length) return null
