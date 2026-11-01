@@ -130,7 +130,8 @@ function Donut({ points, unit }: { points: Point[]; unit: string }) {
             <span>{p.label}</span>
             <span className="ml-auto pl-4 font-semibold">
               {nf.format(p.value)}
-              {unit} {'·'} {Math.round((p.value / total) * 100)}%
+              {unit}
+              {unit === '%' ? null : ` · ${Math.round((p.value / total) * 100)}%`}
             </span>
           </li>
         ))}
