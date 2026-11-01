@@ -52,7 +52,7 @@ export default function YouTubeEmbed({ url, title }: { url: string; title?: stri
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`}
-              alt=""
+              alt={label}
               width={480}
               height={360}
               loading="lazy"
