@@ -102,7 +102,7 @@ export default function SiteFooter({ settings, categories }: Props) {
 
           {columns.map((col) => (
             <nav key={col.title} aria-label={col.title}>
-              <h2 className={`font-heading text-lg font-bold mb-4 ${t.heading}`}>{col.title}</h2>
+              <p className={`font-heading text-lg font-bold mb-4 ${t.heading}`}>{col.title}</p>
               <ul className="space-y-1">
                 {col.links.map((l) => (
                   <li key={`${l.href}-${l.label}`}>

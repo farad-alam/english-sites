@@ -128,7 +128,7 @@ function FaqBlock({ value }: { value: { items?: { _key?: string; question: strin
   if (!value?.items?.length) return null
   return (
     <div className="my-8 md:my-10">
-      <h3 className="font-heading font-bold text-text-primary text-xl mb-4">Frequently asked questions</h3>
+      <h2 className="font-heading font-bold text-text-primary text-xl mb-4">Frequently asked questions</h2>
       <div className="space-y-3">
         {value.items.map((item, i) => (
           <details key={item._key ?? i} className="bg-surface-card border border-surface-border rounded-xl group open:shadow-card open:border-brand-primary/30">

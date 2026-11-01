@@ -29,6 +29,7 @@ export default function SanityImage({ image, alt, className = '', sizes = '(min-
       fill
       sizes={sizes}
       priority={priority}
+      fetchPriority={priority ? 'high' : undefined}
       quality={quality}
       unoptimized={external}
       className={`object-cover ${className}`}

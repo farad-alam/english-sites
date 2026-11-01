@@ -39,10 +39,29 @@ export function getHeadings(body: PortableTextBlock[] | undefined): HeadingInfo[
 }
 
 /** Rough word count for Article structured data. */
+const SKIP_KEYS = new Set(['url', 'href', 'slug', 'style', 'type', 'chartType', 'tone', 'asset', 'image', 'affiliateUrl', 'link', 'listItem'])
+
+/** Collect every readable string in a custom block (tables, FAQ, callouts, checklists, cards...). */
+function plainText(value: unknown, out: string[]): void {
+  if (typeof value === 'string') {
+    out.push(value)
+  } else if (Array.isArray(value)) {
+    for (const v of value) plainText(v, out)
+  } else if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value as Record<string, unknown>)) {
+      if (k.startsWith('_') || SKIP_KEYS.has(k)) continue
+      plainText(v, out)
+    }
+  }
+}
+
 export function wordCount(body: PortableTextBlock[] | undefined): number {
   let n = 0
   for (const block of body ?? []) {
-    if (block._type === 'block') n += textOf(block).split(/\s+/).filter(Boolean).length
+    const parts: string[] = []
+    if (block._type === 'block') parts.push(textOf(block))
+    else plainText(block, parts)
+    n += parts.join(' ').split(/\s+/).filter(Boolean).length
   }
   return n
 }
