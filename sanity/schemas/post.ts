@@ -100,7 +100,7 @@ export const postSchema = defineType({
     bodyField({
       group: 'content',
       title: 'Article body',
-      blocks: ['productCard', 'productComparisonTable', 'offerCard', 'prosConsBlock', 'faqBlock', 'calloutBlock', 'tableBlock', 'youtubeEmbed', 'checklistBlock'],
+      blocks: ['productCard', 'productComparisonTable', 'offerCard', 'prosConsBlock', 'faqBlock', 'calloutBlock', 'tableBlock', 'youtubeEmbed', 'checklistBlock', 'chartBlock'],
     }),
 
     // SEO
