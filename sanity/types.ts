@@ -299,6 +299,8 @@ export interface SiteSettings {
     defaultDescription?: string
     defaultOgImage?: SanityImageValue
     twitterHandle?: string
+    /** Category pages are noindex unless they have at least this many articles (0 or empty = never index). */
+    indexCategoriesMinPosts?: number
   }
 }
 
