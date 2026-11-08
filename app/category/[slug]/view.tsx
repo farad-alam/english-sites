@@ -9,6 +9,7 @@ import { PAGE_SIZE } from '@/lib/config'
 import { getCountry } from '@/lib/country'
 import { breadcrumbSchema } from '@/lib/schema'
 import { buildMetadata } from '@/lib/seo'
+import { isCategoryIndexable } from '@/lib/category-index'
 import { getSettings } from '@/lib/settings'
 import { countPosts, getCategories, getCategoryBySlug, getLatestPosts } from '@/sanity/queries'
 
@@ -21,7 +22,8 @@ export async function categoryMetadata(slug: string, page: number): Promise<Meta
     title: page > 1 ? `${category.title} — page ${page}` : category.title,
     description: category.description || `The latest ${category.title} articles from ${settings.siteName}.`,
     path: page > 1 ? `/category/${slug}/page/${page}` : `/category/${slug}`,
-    noIndex: total === 0, // don't ask Google to index an empty page
+    // Category pages stay out of Google unless the site owner sets a minimum article count (Site Settings, SEO).
+    noIndex: !isCategoryIndexable(total, settings.seo?.indexCategoriesMinPosts),
   })
 }
 
