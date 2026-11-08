@@ -103,7 +103,6 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
                 </Link>
               )}
               <h1 className="mt-1 font-heading font-extrabold text-3xl sm:text-4xl lg:text-[2.75rem] leading-[1.2] text-text-primary text-balance">{post.title}</h1>
-              {post.excerpt && <p className="mt-4 text-lg text-text-muted leading-relaxed">{post.excerpt}</p>}
 
               <div className="mt-5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-text-muted">
                 <time dateTime={post.publishedAt}>Published {formatDate(post.publishedAt, country)}</time>
