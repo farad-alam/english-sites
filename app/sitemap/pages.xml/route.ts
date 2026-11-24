@@ -1,5 +1,6 @@
 import { urlset, type SitemapEntry } from '@/lib/sitemap'
 import { getSettings } from '@/lib/settings'
+import { getCustomPageSlugs } from '@/sanity/queries'
 
 export const dynamic = 'force-static'
 export const revalidate = false
@@ -16,5 +17,9 @@ export async function GET() {
   if (settings.modules.blog) entries.splice(1, 0, { path: '/blog', changefreq: 'daily', priority: 0.8 })
   if (settings.modules.offers) entries.splice(1, 0, { path: '/offers', changefreq: 'weekly', priority: 0.8 })
   if (settings.modules.affiliate || settings.modules.offers) entries.push({ path: '/disclosure', changefreq: 'yearly', priority: 0.2 })
+  // Pages made with "Custom page" in Studio (for example /how-we-review).
+  for (const page of await getCustomPageSlugs()) {
+    entries.push({ path: '/' + page.slug, lastmod: page.updatedAt, changefreq: 'yearly', priority: 0.3 })
+  }
   return urlset(entries)
 }
