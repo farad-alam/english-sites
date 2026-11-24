@@ -410,6 +410,8 @@ export interface Offer extends OfferCardData {
 
 export interface StaticPageData {
   key: string
+  /** Custom pages only: the address after the site name, without slashes. */
+  slug?: string
   title: string
   description?: string
   intro?: string

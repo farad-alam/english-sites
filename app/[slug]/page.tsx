@@ -20,7 +20,8 @@ import { articleSchema, breadcrumbSchema, faqSchema, reviewSchema } from '@/lib/
 import { buildMetadata } from '@/lib/seo'
 import { getSettings } from '@/lib/settings'
 import { hasImage } from '@/sanity/image'
-import { getPostBySlug, getPostSlugs, getRelatedPosts } from '@/sanity/queries'
+import CustomPage, { customPageMetadata } from '@/components/layout/CustomPage'
+import { getCustomPage, getCustomPageSlugs, getPostBySlug, getPostSlugs, getRelatedPosts } from '@/sanity/queries'
 import type { PortableTextBlock, Post, SiteSettings } from '@/sanity/types'
 
 export const revalidate = false
@@ -29,7 +30,8 @@ type Params = { slug: string }
 
 export async function generateStaticParams(): Promise<Params[]> {
   try {
-    return (await getPostSlugs(100)).map((slug) => ({ slug }))
+    const [posts, pages] = await Promise.all([getPostSlugs(100), getCustomPageSlugs()])
+    return [...posts, ...pages.map((p) => p.slug)].map((slug) => ({ slug }))
   } catch {
     return [] // build still succeeds; pages are then generated on first visit and cached
   }
@@ -38,7 +40,11 @@ export async function generateStaticParams(): Promise<Params[]> {
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const { slug } = await params
   const [settings, post] = await Promise.all([getSettings(), getPostBySlug(slug)])
-  if (!settings.modules.blog || !post) return {}
+  if (!settings.modules.blog || !post) {
+    // Not an article: it may be a custom page ("How we review") made in Studio.
+    const page = await getCustomPage(slug)
+    return page ? customPageMetadata(page, settings) : {}
+  }
   return buildMetadata({
     settings,
     title: post.seoTitle || post.title,
@@ -67,7 +73,11 @@ function shouldShowDisclosure(post: Post, settings: SiteSettings): boolean {
 export default async function ArticlePage({ params }: { params: Promise<Params> }) {
   const { slug } = await params
   const [settings, post] = await Promise.all([getSettings(), getPostBySlug(slug)])
-  if (!settings.modules.blog || !post) notFound()
+  if (!settings.modules.blog || !post) {
+    const page = await getCustomPage(slug)
+    if (page) return <CustomPage page={page} settings={settings} />
+    notFound()
+  }
 
   const country = getCountry(settings.country)
   const related = await getRelatedPosts(post.category?._id, post._id, 4)

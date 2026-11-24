@@ -348,6 +348,26 @@ export const getStaticPage = cache(async (key: string): Promise<StaticPageData |
   })
 })
 
+/** A custom page (for example "How we review") by its address. The built-in pages never come through here. */
+export const getCustomPage = cache(async (slug: string): Promise<StaticPageData | null> => {
+  return sanityFetch<StaticPageData | null>({
+    query: `*[_type == "staticPage" && key == "custom" && slug.current == $slug][0]{
+      key, title, "slug": slug.current, description, intro, body, "updatedAt": coalesce(updatedAt, _updatedAt)
+    }`,
+    params: { slug },
+    tags: ['staticPages'],
+    fallback: null,
+  })
+})
+
+export const getCustomPageSlugs = cache(async (): Promise<{ slug: string; updatedAt?: string }[]> => {
+  return sanityFetch<{ slug: string; updatedAt?: string }[]>({
+    query: `*[_type == "staticPage" && key == "custom" && defined(slug.current)]{ "slug": slug.current, "updatedAt": coalesce(updatedAt, _updatedAt) }`,
+    tags: ['staticPages'],
+    fallback: [],
+  })
+})
+
 // ── Navigation (kept light so a new article never invalidates every page) ──
 
 /** Every category, in display order, with just what the menu and footer need. */
